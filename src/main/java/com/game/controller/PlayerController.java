@@ -1,26 +1,18 @@
 package com.game.controller;
 
-import com.game.entity.Player;
-import com.game.entity.Profession;
-import com.game.entity.Race;
-import com.game.repository.PlayerRepository;
+import com.game.entity.*;
 import com.game.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.EntityManager;
 import java.util.*;
 
 @RestController
 public class PlayerController {
 
     private final PlayerService playerService;
-    private EntityManager em;
 
     @Autowired
     public PlayerController(PlayerService playerService) {
@@ -32,21 +24,21 @@ public class PlayerController {
                                                 @RequestParam(value = "title", required = false) String title,
                                                 @RequestParam(value = "race", required = false) Race race,
                                                 @RequestParam(value = "profession", required = false) Profession profession,
-                                                @RequestParam(value = "after", required = false) Long after,
-                                                @RequestParam(value = "before", required = false) Long before,
+                                                @RequestParam(value = "after", required = false) Long fromDate,
+                                                @RequestParam(value = "before", required = false) Long toDate,
                                                 @RequestParam(value = "banned", required = false) Boolean banned,
                                                 @RequestParam(value = "minExperience", required = false) Integer minExperience,
                                                 @RequestParam(value = "maxExperience", required = false) Integer maxExperience,
                                                 @RequestParam(value = "minLevel", required = false) Integer minLevel,
                                                 @RequestParam(value = "maxLevel", required = false) Integer maxLevel,
-                                                @RequestParam(value = "order", required = false) PlayerOrder order,
-                                                @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                                                @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                                                Pageable pageable) {
+                                                @RequestParam(value = "order", required = false, defaultValue = "ID")PlayerOrder order,
+                                                @RequestParam(value = "pageSize", required = false, defaultValue = "3") Integer pageSize,
+                                                @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber) {
 
-        //final Page<Player> playerList = playerService.getSortedList(name,title,race,profession,after,before,banned,
-        //        minExperience,maxExperience,minLevel,maxLevel,order,pageNumber,pageSize);
-        return new ResponseEntity<>(playerService.findAll(), HttpStatus.OK);
+        List<Player> list = playerService.findPlayers(name, title, race, profession, fromDate, toDate,
+                banned, minExperience, maxExperience, minLevel, maxLevel, pageNumber, pageSize, order);
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping(path = "/rest/players/{id}")
@@ -135,11 +127,21 @@ public class PlayerController {
     }
 
     @GetMapping("/rest/players/count")
-    public int getCountPlayers(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                               @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                               @RequestParam(value = "order", required = false) String order) {
+    public Long getCountPlayers(@RequestParam(value = "name", required = false) String name,
+                                @RequestParam(value = "title", required = false) String title,
+                                @RequestParam(value = "race", required = false) Race race,
+                                @RequestParam(value = "profession", required = false) Profession profession,
+                                @RequestParam(value = "after", required = false) Long fromDate,
+                                @RequestParam(value = "before", required = false) Long toDate,
+                                @RequestParam(value = "banned", required = false) Boolean banned,
+                                @RequestParam(value = "minExperience", required = false) Integer minExperience,
+                                @RequestParam(value = "maxExperience", required = false) Integer maxExperience,
+                                @RequestParam(value = "minLevel", required = false) Integer minLevel,
+                                @RequestParam(value = "maxLevel", required = false) Integer maxLevel) {
 
-        return 0;
+        Long count = playerService.findPlayerCount(name, title, race, profession, fromDate, toDate,
+                banned, minExperience, maxExperience, minLevel, maxLevel);
+        return count;
     }
 
     @PostMapping("/rest/players/{id}")
