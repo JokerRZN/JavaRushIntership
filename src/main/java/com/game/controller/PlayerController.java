@@ -53,7 +53,6 @@ public class PlayerController {
         if (ids <= 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         Player player;
         try {
              player = playerService.findById(ids);
@@ -61,7 +60,6 @@ public class PlayerController {
         catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
@@ -69,7 +67,6 @@ public class PlayerController {
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         ResponseEntity<Player> result = null;
         try {
-
             Player player1 = playerService.savePlayer(player);
             if (player == null
                     || player.getExperience() > 10000000
@@ -94,7 +91,6 @@ public class PlayerController {
                     result = new ResponseEntity<>(player1, HttpStatus.OK);
                 }
             }
-
         }
         catch (DataIntegrityViolationException | NullPointerException e) {
             result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -209,6 +205,5 @@ public class PlayerController {
         player1.setUntilNextLevel(newUnderNextLevel);
 
         return new ResponseEntity<>(player1, HttpStatus.OK);
-
     }
 }

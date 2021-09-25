@@ -2,9 +2,8 @@ package com.game.repository;
 
 import com.game.controller.PlayerOrder;
 import com.game.entity.*;
-import org.springframework.data.domain.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,6 +19,7 @@ public class PlayerCriteriaRep {
     private final EntityManager em;
     private final CriteriaBuilder criteriaBuilder;
 
+    @Autowired
     public PlayerCriteriaRep(EntityManager em) {
         this.em = em;
         this.criteriaBuilder = em.getCriteriaBuilder();
@@ -139,8 +139,6 @@ public class PlayerCriteriaRep {
             to.setTime(toDate);
             predicates.add(criteriaBuilder.lessThan(playerRoot.get("birthday"), to));
         }
-
-
         if (banned != null) {
             predicates.add(criteriaBuilder.equal(playerRoot.get("banned"), banned));
         }
